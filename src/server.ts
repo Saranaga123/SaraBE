@@ -37,27 +37,28 @@ app.post("/api/user/Create",asyncHandler(
     async(req,res,next)=>{
         await UsersModel.deleteMany(); 
         res.header('Access-Control-Allow-Origin', '*'); 
-        const {name,password,role,email,bod,nic,occupation,gender,image}=req.body; 
-        const newHouserent:Users = {  
-            id:'',
-            name:name, 
-            password:password,
-            role:role,
-            email:email,
-            bod:bod,
-            nic:nic,
-            occupation:occupation,
-            gender:gender,
-            image:image
+        const {name,password,role,email,bod,nic,occupation,gender,image,status}=req.body; 
+        const newuser:Users = {
+            id: '',
+            name: name,
+            password: password,
+            role: role,
+            email: email,
+            bod: bod,
+            nic: nic,
+            occupation: occupation,
+            gender: gender,
+            image: image,
+            status: status
         }  
-        const dbUser = await UsersModel.create(newHouserent);
+        const dbUser = await UsersModel.create(newuser);
         res.send("Done")
     }
 )) 
 app.get("/api/user/destro",asyncHandler(
     async(req,res)=>{
-        const houserents = await UsersModel.deleteMany(); 
-        res.send(houserents)
+        const users = await UsersModel.deleteMany(); 
+        res.send(users)
     }
 )) 
 app.get("/api/user/seed",asyncHandler(
