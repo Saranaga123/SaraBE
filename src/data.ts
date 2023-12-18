@@ -11,6 +11,7 @@
     occupation:"SSE",
     gender:"male",
     image: null,
+    status:"Active"
     }
      
 ];

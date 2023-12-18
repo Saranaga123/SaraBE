@@ -10,6 +10,7 @@ export interface Users{
     occupation:string;
     gender:string;
     image:string;
+    status:string; 
      
 }
 export const UsersSchema = new Schema<Users>(
@@ -23,6 +24,7 @@ export const UsersSchema = new Schema<Users>(
         occupation:{type:String, required:false},
         gender:{type:String, required:false},
         image:{type:String, required:false},
+        status:{type:String, required:true},
          
     },{
         toJSON:{
