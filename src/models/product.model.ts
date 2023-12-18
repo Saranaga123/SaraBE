@@ -32,5 +32,5 @@ export const ProductsSchema = new Schema<Product>(
         timestamps:true
     }
 );
-export const ProductModel = model<Product>('users', ProductsSchema);
+export const ProductModel = model<Product>('product', ProductsSchema);
  

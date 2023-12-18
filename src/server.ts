@@ -2,11 +2,12 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import cors from "cors";  
-import { seedUser } from "./data"; 
+import { seedProduct, seedUser } from "./data"; 
 import {dbConnect} from "./configs/database.config" ;
 import asyncHandler from 'express-async-handler';
 import { Users, UsersModel } from "./models/User.model";
 import bodyParser from "body-parser"; 
+import { Product,ProductModel } from "./models/product.model";
 dbConnect();  
 const app = express(); 
 app.use(bodyParser.json({
@@ -113,3 +114,20 @@ app.get("/api/seed",asyncHandler(
 ))
 //Ecom related 
 //Ecom Product related 
+app.get("/api/prod/destro",asyncHandler(
+    async(req,res)=>{
+        const prod = await ProductModel.deleteMany(); 
+        res.send(prod)
+    }
+)) 
+app.get("/api/prod/seed",asyncHandler(
+    async (req,res)=>{
+        const prod =await ProductModel.countDocuments();
+        if(prod>0){
+            res.send ("seed is already done");
+            return;
+        }
+        await ProductModel.create(seedProduct)
+        res.send("Product seed is done");
+    }
+)) 

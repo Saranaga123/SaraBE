@@ -15,4 +15,17 @@
     }
      
 ];
- 
+export const seedProduct: any[] = [
+  
+  {
+    name:"Sample",
+        userid:"1",
+        buyerid:"1",
+        description:"sample",
+        available:"10",
+        status:"Active",
+        image:null,
+        category:"Sample"
+    }
+     
+];
