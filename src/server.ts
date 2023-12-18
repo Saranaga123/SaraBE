@@ -131,3 +131,10 @@ app.get("/api/prod/seed",asyncHandler(
         res.send("Product seed is done");
     }
 )) 
+app.get("/api/prod",asyncHandler(
+    async(req,res)=>{
+        res.header('Access-Control-Allow-Origin', '*'); 
+        const prod = await ProductModel.find(); 
+        res.send(prod)
+    }
+))
