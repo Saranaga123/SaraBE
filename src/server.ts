@@ -138,3 +138,20 @@ app.get("/api/prod",asyncHandler(
         res.send(prod)
     }
 ))
+app.get("/api/prod/:prod", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const prod = req.params.prod; 
+        const regex = new RegExp(prod, 'i'); // 'i' flag for case-insensitive search
+
+        // Find users where the email partially matches
+        const prods = await ProductModel.find({ name: { $regex: regex } });
+
+        if (!prods || prods.length === 0) {
+            res.status(404).send("User not found"); 
+            return;
+        }
+
+        res.send(prods); // Send matching users' details as the response
+    }
+));
