@@ -26,6 +26,16 @@ export const seedProduct: any[] = [
         status:"Active",
         image:null,
         category:"Sample"
-    }
+    },
+    {
+      name:"test",
+          userid:"1",
+          buyerid:"1",
+          description:"test",
+          available:"10",
+          status:"Active",
+          image:null,
+          category:"test"
+      }
      
 ];
