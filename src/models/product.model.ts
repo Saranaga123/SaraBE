@@ -6,6 +6,7 @@ export interface Product{
     buyerid:string;
     description:string;
     available:string;
+    category:string;
     status:string;     
     image:string;
      
@@ -19,6 +20,7 @@ export const ProductsSchema = new Schema<Product>(
         available:{type:String, required:false},
         status:{type:String, required:false}, 
         image:{type:String, required:false},
+        category:{type:String, required:false},
          
     },{
         toJSON:{
