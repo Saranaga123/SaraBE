@@ -21,6 +21,8 @@ export interface ProductSpec{
     Regulatory :string;
     Weight:string;
     image:string;
+    image2:string;
+    image3:string;
 }
 export const ProductSpecSchema = new Schema<ProductSpec>(
     {
@@ -43,7 +45,9 @@ export const ProductSpecSchema = new Schema<ProductSpec>(
         Power : {type:String, required:true},
         Regulatory :{type:String, required:true},
         Weight:{type:String, required:true},
-        image:{type:String, required:true}
+        image:{type:String, required:true},
+        image2:{type:String, required:true},
+        image3:{type:String, required:true}
          
     },{
         toJSON:{

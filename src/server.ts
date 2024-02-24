@@ -30,7 +30,7 @@ app.use (cors({
 }));
 const port = process.env.PORT || 666;
 app.listen(port,()=>{
-    console.log("Website served on http://localhost:" + port);
+    console.log("SaraBE Server is on http://localhost:" + port);
 })
 //User Related
 app.get("/sarabe/user",asyncHandler(
