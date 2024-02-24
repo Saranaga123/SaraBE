@@ -2,14 +2,20 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import cors from "cors";  
-import { seedProduct, seedUser } from "./data"; 
+import { seedProdSpec, seedProduct, seedUser } from "./data"; 
 import {dbConnect} from "./configs/database.config" ;
 import asyncHandler from 'express-async-handler';
 import { Users, UsersModel } from "./models/User.model";
 import bodyParser from "body-parser"; 
 import { Product,ProductModel } from "./models/product.model";
+import { ProductSpecModel } from "./models/prodSpec.model";
 dbConnect();  
 const app = express(); 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    // Other CORS headers setup if needed...
+    next();
+  });
 app.use(bodyParser.json({
     limit: '50mb'
   })); 
@@ -27,14 +33,14 @@ app.listen(port,()=>{
     console.log("Website served on http://localhost:" + port);
 })
 //User Related
-app.get("/api/user",asyncHandler(
+app.get("/sarabe/user",asyncHandler(
     async(req,res)=>{
         res.header('Access-Control-Allow-Origin', '*'); 
         const users = await UsersModel.find(); 
         res.send(users)
     }
 ))
-app.post("/api/user/Create",asyncHandler(
+app.post("/sarabe/user/Create",asyncHandler(
     async(req,res,next)=>{
         await UsersModel.deleteMany(); 
         res.header('Access-Control-Allow-Origin', '*'); 
@@ -56,13 +62,13 @@ app.post("/api/user/Create",asyncHandler(
         res.send("Done")
     }
 )) 
-app.get("/api/user/destro",asyncHandler(
+app.get("/sarabe/user/destro",asyncHandler(
     async(req,res)=>{
         const users = await UsersModel.deleteMany(); 
         res.send(users)
     }
 )) 
-app.get("/api/user/seed",asyncHandler(
+app.get("/sarabe/user/seed",asyncHandler(
     async (req,res)=>{
         const houserents =await UsersModel.countDocuments();
         if(houserents>0){
@@ -73,14 +79,14 @@ app.get("/api/user/seed",asyncHandler(
         res.send("user seed is done");
     }
 ))    
-app.get("/api/user/destro/:searchTerm",asyncHandler(
+app.get("/sarabe/user/destro/:searchTerm",asyncHandler(
     async(req,res)=>{
         const searchTerm = req.params.searchTerm;
         await UsersModel.deleteOne({id:searchTerm}); 
         res.send(searchTerm)
     }
 )) 
-app.get("/api/user/:email", asyncHandler(
+app.get("/sarabe/user/:email", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
         const userEmail = req.params.email; 
@@ -94,13 +100,13 @@ app.get("/api/user/:email", asyncHandler(
         res.send(user);  
     }
 ));
-app.get("/api/destro",asyncHandler(
+app.get("/sarabe/destro",asyncHandler(
     async(req,res)=>{ 
         await UsersModel.deleteMany();  
         res.send(" All Data Erased ! ")
     }
 )) 
-app.get("/api/seed",asyncHandler(
+app.get("/sarabe/seed",asyncHandler(
     async (req,res)=>{  
         const userCount =await UsersModel.countDocuments();
         if(userCount>0){
@@ -114,13 +120,15 @@ app.get("/api/seed",asyncHandler(
 ))
 //Ecom related 
 //Ecom Product related 
-app.get("/api/prod/destro",asyncHandler(
+app.get("/sarabe/prod/destro",asyncHandler(
     async(req,res)=>{
         const prod = await ProductModel.deleteMany(); 
+        const prodspec = await ProductSpecModel.deleteMany()
         res.send(prod)
+        res.send(prodspec)
     }
 )) 
-app.get("/api/prod/seed",asyncHandler(
+app.get("/sarabe/prod/seed",asyncHandler(
     async (req,res)=>{
         const prod =await ProductModel.countDocuments();
         if(prod>0){
@@ -128,24 +136,25 @@ app.get("/api/prod/seed",asyncHandler(
             return;
         }
         await ProductModel.create(seedProduct)
+        await ProductSpecModel.create(seedProdSpec)
         res.send("Product seed is done");
     }
 )) 
-app.get("/api/prod",asyncHandler(
+app.get("/sarabe/prod",asyncHandler(
     async(req,res)=>{
         res.header('Access-Control-Allow-Origin', '*'); 
         const prod = await ProductModel.find(); 
         res.send(prod)
     }
 ))
-app.get("/api/prod/:prod", asyncHandler(
+app.get("/sarabe/prod/:prod", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
         const prod = req.params.prod; 
         const regex = new RegExp(prod, 'i'); // 'i' flag for case-insensitive search
 
         // Find users where the email partially matches
-        const prods = await ProductModel.find({ name: { $regex: regex } });
+        const prods = await ProductSpecModel.find({ name: { $regex: regex } });
 
         if (!prods || prods.length === 0) {
             res.status(404).send("User not found"); 

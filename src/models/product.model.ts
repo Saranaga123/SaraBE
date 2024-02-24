@@ -4,6 +4,7 @@ export interface Product{
     name:string; 
     userid:string;
     buyerid:string;
+    price:string;
     description:string;
     available:string;
     category:string;
@@ -17,6 +18,7 @@ export const ProductsSchema = new Schema<Product>(
         userid:{type:String, required:true},
         buyerid:{type:String, required:false},
         description:{type:String, required:true},
+        price:{type:String, required:true},
         available:{type:String, required:false},
         status:{type:String, required:false}, 
         image:{type:String, required:false},
