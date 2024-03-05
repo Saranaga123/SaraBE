@@ -164,3 +164,4 @@ app.get("/sarabe/prod/:prod", asyncHandler(
         res.send(prods); // Send matching users' details as the response
     }
 ));
+//SaleLogs related
