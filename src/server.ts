@@ -3,11 +3,13 @@ dotenv.config();
 import express from "express";
 import cors from "cors";  
 import { seedProdSpec, seedProduct, seedUser } from "./data"; 
+import { seedOrders } from "./dataset2"; 
 import {dbConnect} from "./configs/database.config" ;
 import asyncHandler from 'express-async-handler';
 import { Users, UsersModel } from "./models/User.model";
 import bodyParser from "body-parser"; 
 import { Product,ProductModel } from "./models/product.model";
+import { Orders,OrdersModel } from "./models/order.model";
 import { ProductSpecModel } from "./models/prodSpec.model";
 dbConnect();  
 const app = express(); 
@@ -33,6 +35,53 @@ app.listen(port,()=>{
     console.log("SaraBE Server is on http://localhost:" + port);
 })
 //User Related
+app.post("/sarabe/order/Create",asyncHandler(
+    async(req,res,next)=>{ 
+        res.header('Access-Control-Allow-Origin', '*'); 
+        const {product,name,model,billingAmount,mobile,email,post,add1,add2,add3,payMethod,status}=req.body; 
+        const neworder:Orders = {
+            id: '',
+            product: product,
+            name: name,
+            model: model,
+            billingAmount: billingAmount,
+            mobile: mobile,
+            email: email,
+            post: post,
+            add1: add1,
+            add2: add2,
+            add3: add3,
+            payMethod: payMethod,
+            status: status
+        }  
+        const dbOrder = await OrdersModel.create(neworder);
+        res.send("Done")
+    }
+)) 
+app.get("/sarabe/orders",asyncHandler(
+    async(req,res)=>{
+        res.header('Access-Control-Allow-Origin', '*'); 
+        const orders = await OrdersModel.find(); 
+        res.send(orders)
+    }
+))
+app.get("/sarabe/orders/destro",asyncHandler(
+    async(req,res)=>{
+        const orders = await OrdersModel.deleteMany(); 
+        res.send(orders)
+    }
+))
+app.get("/sarabe/orders/seed",asyncHandler(
+    async (req,res)=>{
+        const orders =await OrdersModel.countDocuments();
+        if(orders>0){
+            res.send ("seed is already done");
+            return;
+        }
+        await OrdersModel.create(seedOrders)
+        res.send("order seed is done");
+    }
+)) 
 app.get("/sarabe/user",asyncHandler(
     async(req,res)=>{
         res.header('Access-Control-Allow-Origin', '*'); 
