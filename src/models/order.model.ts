@@ -1,9 +1,12 @@
 import { Schema,model } from "mongoose";
 export interface Orders{
     id:string;
+    date:string;
     product:string; 
     model:string;
     billingAmount:string;
+    units:string;
+    unitprice:string;
     mobile:string;
     email:string;
     post:string;
@@ -16,11 +19,13 @@ export interface Orders{
      
 }
 export const OrdersSchema = new Schema<Orders>(
-    { 
-
+    {  
+        date:{type:String, required:true},
         product:{type:String, required:true},
         model:{type:String, required:true},
         billingAmount:{type:String, required:true},
+        units:{type:String, required:true},
+        unitprice:{type:String, required:true},
         mobile:{type:String, required:true},
         email:{type:String, required:true},
         post:{type:String, required:true},
