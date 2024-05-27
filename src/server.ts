@@ -172,8 +172,9 @@ app.get("/sarabe/user",asyncHandler(
 ))
 app.post("/sarabe/user/Create",asyncHandler(
     async(req,res,next)=>{
-        await UsersModel.deleteMany(); 
+        
         res.header('Access-Control-Allow-Origin', '*'); 
+        
         const {name,password,role,email,bod,nic,occupation,gender,image,status}=req.body; 
         const newuser:Users = {
             id: '',
@@ -188,8 +189,15 @@ app.post("/sarabe/user/Create",asyncHandler(
             image: image,
             status: status
         }  
-        const dbUser = await UsersModel.create(newuser);
-        res.send("Done")
+        const existingUser = await UsersModel.findOne({ email: email });
+        if (existingUser) {
+        // Email already exists, return a response indicating the conflict
+        res.json("already");
+        }else{
+            const dbUser = await UsersModel.create(newuser);
+            res.json("done");
+        }
+        
     }
 )) 
 app.get("/sarabe/user/destro",asyncHandler(
