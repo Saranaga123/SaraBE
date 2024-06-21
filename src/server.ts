@@ -118,6 +118,28 @@ app.post("/sarabe/order/Update/:orderId", asyncHandler(
         return Promise.resolve();
     }
 ));
+app.delete("/sarabe/order/delete/:orderId", asyncHandler(
+    
+    async (req, res, next) => {
+        console.log("executing delete");
+        res.header('Access-Control-Allow-Origin', '*');
+
+        const orderId = req.params.orderId;
+        
+        const dbOrder = await OrdersModel.findByIdAndDelete(orderId);
+
+        if (!dbOrder) {
+            // If the order with the specified ID is not found, send a 404 response
+            res.status(404).json({ error: 'Order not found' });
+        } else {
+            // Send the updated order as a JSON response
+            res.json({ status: 'Success' });
+        }
+
+        // Ensure to return a Promise<void>
+        return Promise.resolve();
+    }
+));
 app.get("/sarabe/orders",asyncHandler(
     async(req,res)=>{
         res.header('Access-Control-Allow-Origin', '*'); 
