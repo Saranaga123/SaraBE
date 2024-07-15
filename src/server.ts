@@ -11,7 +11,7 @@ import { Users, UsersModel } from "./models/User.model";
 import bodyParser from "body-parser"; 
 import { Product,ProductModel } from "./models/product.model";
 import { Orders,OrdersModel } from "./models/order.model";
-import { ProductSpecModel } from "./models/prodSpec.model"; 
+import { ProductSpec, ProductSpecModel } from "./models/prodSpec.model"; 
 dbConnect();  
 const app = express(); 
 app.use((req, res, next) => {
@@ -300,6 +300,78 @@ app.get("/sarabe/prod/seed",asyncHandler(
         res.send("Product seed is done");
     }
 )) 
+app.post("/sarabe/prod/Create",asyncHandler(
+    async(req,res,next)=>{
+        
+        res.header('Access-Control-Allow-Origin', '*'); 
+        
+        const {name,userid,buyerid,description,price,available,status,image,category}=req.body; 
+        const newproduct:Product = {
+            id: '',
+            name: name,
+            userid: userid,
+            buyerid: buyerid,
+            description: description,
+            price: price,
+            available: available, 
+            status: status,
+            image: image,
+            category: category
+        }  
+        const existingProd = await ProductModel.findOne({ name: name });
+        if (existingProd) {
+        // Email already exists, return a response indicating the conflict
+        res.json("already");
+        }else{
+            const dbUser = await ProductModel.create(newproduct);
+            res.json("done");
+        }
+        
+    }
+)) 
+app.post("/sarabe/prodspec/Create",asyncHandler(
+    async(req,res,next)=>{
+        
+        res.header('Access-Control-Allow-Origin', '*'); 
+        
+        const {name,price,Processor,OperatingSystem,GraphicsCard,Display,Memory,Storage,Case,Keyboard,Camera,AudioAndSpeakers,Touchpad,Wireless,PrimaryBattery,Power
+                ,Regulatory,BatteryLife,Weight,image,image2,image3}=req.body; 
+        const newproduct:ProductSpec = { 
+            id:'',  
+            name:name,
+            price:price,
+            Processor:Processor,
+            OperatingSystem :OperatingSystem,
+            GraphicsCard:GraphicsCard,
+            Display:Display,
+            Memory :Memory,
+            Storage:Storage,
+            Case:Case,
+            Keyboard:Keyboard,
+            Camera:Camera,
+            AudioAndSpeakers :AudioAndSpeakers,
+            Touchpad:Touchpad,
+            Wireless :Wireless,
+            PrimaryBattery:PrimaryBattery,
+            BatteryLife :BatteryLife,
+            Power : Power,
+            Regulatory :Regulatory,
+            Weight:Weight,
+            image:image,
+            image2:image2,
+            image3:image3,
+        }  
+        const existingProd = await ProductSpecModel.findOne({ name: name });
+        if (existingProd) {
+        // Email already exists, return a response indicating the conflict
+        res.json("already");
+        }else{
+            const dbUser = await ProductSpecModel.create(newproduct);
+            res.json("done");
+        }
+        
+    }
+)) 
 app.get("/sarabe/prod",asyncHandler(
     async(req,res)=>{
         res.header('Access-Control-Allow-Origin', '*'); 
@@ -324,4 +396,22 @@ app.get("/sarabe/prod/:prod", asyncHandler(
         res.send(prods); // Send matching users' details as the response
     }
 )); 
+app.get("/sarabe/prod/destro/:prod", asyncHandler(
+    async (req, res) => {
+        const prodname = req.params.prod;
+        
+        try {
+            const prodResult = await ProductModel.deleteOne({ name: prodname });
+            const prodspecResult = await ProductSpecModel.deleteMany({ name: prodname }); // Assuming there is a field productId in ProductSpecModel
+
+            res.json({
+                productDeleted: prodResult,
+                productSpecsDeleted: prodspecResult
+            });
+        } catch (error) {
+            res.status(404).send("User not found:"+ error); 
+            res.status(500).send("Server Error:"+error); 
+        }
+    }
+));
  
