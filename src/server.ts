@@ -222,6 +222,66 @@ app.post("/sarabe/user/Create",asyncHandler(
         
     }
 )) 
+app.post("/sarabe/user/resetPassword", asyncHandler(
+    async (req, res) => {
+        const { id, password } = req.body;
+
+        try {
+            const user = await UsersModel.findOne({ id: id });
+
+            if (!user) {
+                res.status(404).send("User not found");
+                return;
+            }
+
+            user.password = password;
+            await user.save();
+
+            res.json("Password reset successfully");
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
+app.post("/sarabe/user/update", asyncHandler(
+    async (req, res) => {
+        const { id, name, role, email, bod, nic, occupation, gender, image, status } = req.body;
+
+        try {
+            const user = await UsersModel.findOne({ email: email });
+
+            if (!user) {
+                res.status(404).send("User not found");
+                return;
+            }
+
+            // Update user details
+            user.name = name || user.name;
+            user.role = role || user.role;
+            user.email = email || user.email;
+            user.bod = bod || user.bod;
+            user.nic = nic || user.nic;
+            user.occupation = occupation || user.occupation;
+            user.gender = gender || user.gender;
+            user.image = image || user.image;
+            user.status = status || user.status;
+
+            await user.save();
+
+            res.json("User details updated successfully");
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
 app.get("/sarabe/user/destro",asyncHandler(
     async(req,res)=>{
         const users = await UsersModel.deleteMany(); 
@@ -239,13 +299,34 @@ app.get("/sarabe/user/seed",asyncHandler(
         res.send("user seed is done");
     }
 ))    
-app.get("/sarabe/user/destro/:searchTerm",asyncHandler(
-    async(req,res)=>{
-        const searchTerm = req.params.searchTerm;
-        await UsersModel.deleteOne({id:searchTerm}); 
-        res.send(searchTerm)
+app.get("/sarabe/user/destro/:searchTerm", asyncHandler(
+    async (req, res) => {
+        const email = req.params.searchTerm;
+        console.log("Received userid:", email);  // Log the user ID to debug
+
+        try {
+            // Fetch the user to ensure it exists before deleting
+            const user = await UsersModel.findOne({ email: email });
+
+            if (!user) {
+                res.status(404).send("User not found");
+                return;
+            }
+
+            const prodResult = await UsersModel.deleteOne({ email: email });
+
+            res.json({
+                productDeleted: prodResult,
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
     }
-)) 
+));
 app.get("/sarabe/user/:email", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
@@ -329,6 +410,42 @@ app.post("/sarabe/prod/Create",asyncHandler(
         
     }
 )) 
+  
+app.post("/sarabe/proddata/update/:prodId", asyncHandler(
+    async (req, res, next) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const prodId = req.params.prodId;
+        const { name, userid, buyerid, description, price, available, status, image, category } = req.body;
+        
+        const newProduct: Product = {
+            id: '',
+            name: name,
+            userid: userid,
+            buyerid: buyerid,
+            description: description,
+            price: price,
+            available: available,
+            status: status,
+            image: image,
+            category: category
+        }
+
+        try {
+            const existingProd = await ProductModel.findOne({ name: prodId });
+            if (existingProd) {
+                // Update the existing product details
+                await ProductModel.updateOne({ name: prodId }, newProduct);
+                res.json("updated");
+            } else {
+                // Create a new product
+                const dbUser = await ProductModel.create(newProduct);
+                res.json("created");
+            }
+        } catch (error) {
+            next(error); // Pass the error to the error handling middleware
+        }
+    }
+));
 app.post("/sarabe/prodspec/Create",asyncHandler(
     async(req,res,next)=>{
         
@@ -372,6 +489,51 @@ app.post("/sarabe/prodspec/Create",asyncHandler(
         
     }
 )) 
+app.post("/sarabe/prodspec/Update/:prodId", asyncHandler(
+    async (req, res, next) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const prodId = req.params.prodId;
+        const {
+            name, price, Processor, OperatingSystem, GraphicsCard, Display, Memory, Storage, Case, Keyboard, Camera, AudioAndSpeakers, Touchpad, Wireless, PrimaryBattery, Power, Regulatory, BatteryLife, Weight, image, image2, image3
+        } = req.body;
+
+        // Check if the product exists
+        const existingProd = await ProductSpecModel.findOne({ name: prodId });
+
+        if (!existingProd) {
+            // Product does not exist, return a response indicating the conflict
+            res.json("not_found");
+        } else {
+            // Update the existing product
+            existingProd.price = price;
+            existingProd.Processor = Processor;
+            existingProd.OperatingSystem = OperatingSystem;
+            existingProd.GraphicsCard = GraphicsCard;
+            existingProd.Display = Display;
+            existingProd.Memory = Memory;
+            existingProd.Storage = Storage;
+            existingProd.Case = Case;
+            existingProd.Keyboard = Keyboard;
+            existingProd.Camera = Camera;
+            existingProd.AudioAndSpeakers = AudioAndSpeakers;
+            existingProd.Touchpad = Touchpad;
+            existingProd.Wireless = Wireless;
+            existingProd.PrimaryBattery = PrimaryBattery;
+            existingProd.BatteryLife = BatteryLife;
+            existingProd.Power = Power;
+            existingProd.Regulatory = Regulatory;
+            existingProd.Weight = Weight;
+            existingProd.image = image;
+            existingProd.image2 = image2;
+            existingProd.image3 = image3;
+
+            // Save the updated product
+            await existingProd.save();
+
+            res.json("updated");
+        }
+    }
+));
 app.get("/sarabe/prod",asyncHandler(
     async(req,res)=>{
         res.header('Access-Control-Allow-Origin', '*'); 
@@ -389,13 +551,30 @@ app.get("/sarabe/prod/:prod", asyncHandler(
         const prods = await ProductSpecModel.find({ name: { $regex: regex } });
 
         if (!prods || prods.length === 0) {
-            res.status(404).send("User not found"); 
+            res.status(404).send("Product not found"); 
             return;
         }
 
         res.send(prods); // Send matching users' details as the response
     }
 )); 
+app.get("/sarabe/proddata/:prod", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const prod = req.params.prod; 
+        const regex = new RegExp(prod, 'i'); // 'i' flag for case-insensitive search
+
+        // Find users where the email partially matches
+        const prods = await ProductModel.find({ name: { $regex: regex } });
+
+        if (!prods || prods.length === 0) {
+            res.status(404).send("Product not found"); 
+            return;
+        }
+
+        res.send(prods); // Send matching users' details as the response
+    }
+));
 app.get("/sarabe/prod/destro/:prod", asyncHandler(
     async (req, res) => {
         const prodname = req.params.prod;
@@ -409,7 +588,7 @@ app.get("/sarabe/prod/destro/:prod", asyncHandler(
                 productSpecsDeleted: prodspecResult
             });
         } catch (error) {
-            res.status(404).send("User not found:"+ error); 
+            res.status(404).send("Product not found:"+ error); 
             res.status(500).send("Server Error:"+error); 
         }
     }

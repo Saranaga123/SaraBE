@@ -25,6 +25,30 @@
       status:"Active"
       },
       {
+        name:"Micky",
+        password:"kumi",
+        role:"Owner",
+        email:"Micky@kumi.kumi",
+        bod:"1995/05/14",
+        nic:"9568742589v",
+        occupation:"SSE",
+        gender:"female",
+        image: null,
+        status:"Active"
+        },
+        {
+          name:"Ise",
+          password:"kumi",
+          role:"Owner",
+          email:"Ise@kumi.kumi",
+          bod:"1995/05/14",
+          nic:"9568742589v",
+          occupation:"SSE",
+          gender:"female",
+          image: null,
+          status:"Active"
+          },
+      {
         name:"ADMINISTRATOR-LEVEL0",
         password:"level0",
         role:"ADMIN",
