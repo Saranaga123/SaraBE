@@ -3,7 +3,7 @@ dotenv.config();
 import express from "express";
 import nodemailer from "nodemailer";
 import cors from "cors";  
-import { seedProdSpec, seedProduct, seedUser } from "./data"; 
+import { seedProdSpec, seedCCProduct, seedUser, seedDoctor } from "./data"; 
 import { seedOrders } from "./dataset2"; 
 import {dbConnect} from "./configs/database.config" ;
 import asyncHandler from 'express-async-handler';
@@ -12,6 +12,7 @@ import bodyParser from "body-parser";
 import { Product,ProductModel } from "./models/product.model";
 import { Orders,OrdersModel } from "./models/order.model";
 import { ProductSpec, ProductSpecModel } from "./models/prodSpec.model"; 
+import { Doctor, DoctorModel, DoctorSchema } from "./models/Doctor.model";
 dbConnect();  
 const app = express(); 
 app.use((req, res, next) => {
@@ -192,6 +193,13 @@ app.get("/sarabe/user",asyncHandler(
         res.send(users)
     }
 ))
+app.get("/sarabe/doctor",asyncHandler(
+    async(req,res)=>{
+        res.header('Access-Control-Allow-Origin', '*'); 
+        const doctor = await DoctorModel.find(); 
+        res.send(doctor)
+    }
+))
 app.post("/sarabe/user/Create",asyncHandler(
     async(req,res,next)=>{
         
@@ -217,6 +225,34 @@ app.post("/sarabe/user/Create",asyncHandler(
         res.json("already");
         }else{
             const dbUser = await UsersModel.create(newuser);
+            res.json("done");
+        }
+        
+    }
+)) 
+app.post("/sarabe/doctor/Create",asyncHandler(
+    async(req,res,next)=>{
+        
+        res.header('Access-Control-Allow-Origin', '*'); 
+        
+        const {UUID,name,specialization,license_number,phone_number,hospital_id,gender,image}=req.body; 
+        const newdoctor:Doctor = {
+            id: '',
+            UUID: UUID,
+            name: name,
+            gender: gender,
+            image: image,
+            specialization: specialization,
+            license_number: license_number,
+            phone_number: phone_number,
+            hospital_id: hospital_id
+        }  
+        const existingDoctor = await DoctorModel.findOne({ UUID: UUID });
+        if (existingDoctor) {
+        // Email already exists, return a response indicating the conflict
+        res.json("already");
+        }else{
+            const dbUser = await DoctorModel.create(newdoctor);
             res.json("done");
         }
         
@@ -282,10 +318,49 @@ app.post("/sarabe/user/update", asyncHandler(
         }
     }
 ));
+app.post("/sarabe/doctor/update", asyncHandler(
+    async (req, res) => {
+        const { UUID,name,specialization,license_number,phone_number,hospital_id,gender,image } = req.body;
+
+        try {
+            const doctor = await DoctorModel.findOne({ UUID: UUID });
+
+            if (!doctor) {
+                res.status(404).send("User not found");
+                return;
+            }
+
+            // Update user details
+            doctor.UUID = UUID || doctor.UUID;
+            doctor.name = name || doctor.name; 
+            doctor.gender = gender || doctor.gender;
+            doctor.image = image || doctor.image; 
+            doctor.specialization = specialization || doctor.specialization; 
+            doctor.license_number = license_number || doctor.license_number; 
+            doctor.phone_number = phone_number || doctor.phone_number; 
+            doctor.hospital_id = hospital_id || doctor.hospital_id; 
+            await doctor.save();
+
+            res.json("User details updated successfully");
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
 app.get("/sarabe/user/destro",asyncHandler(
     async(req,res)=>{
         const users = await UsersModel.deleteMany(); 
         res.send(users)
+    }
+))
+app.get("/sarabe/doctor/destro",asyncHandler(
+    async(req,res)=>{
+        const doctor = await DoctorModel.deleteMany(); 
+        res.send(doctor)
     }
 )) 
 app.get("/sarabe/user/seed",asyncHandler(
@@ -299,6 +374,17 @@ app.get("/sarabe/user/seed",asyncHandler(
         res.send("user seed is done");
     }
 ))    
+app.get("/sarabe/doctor/seed",asyncHandler(
+    async (req,res)=>{
+        const houserents =await DoctorModel.countDocuments();
+        if(houserents>0){
+            res.send ("seed is already done");
+            return;
+        }
+        await DoctorModel.create(seedDoctor)
+        res.send("doctors seed is done");
+    }
+)) 
 app.get("/sarabe/user/destro/:searchTerm", asyncHandler(
     async (req, res) => {
         const email = req.params.searchTerm;
@@ -327,6 +413,34 @@ app.get("/sarabe/user/destro/:searchTerm", asyncHandler(
         }
     }
 ));
+app.get("/sarabe/doctor/destro/:searchTerm", asyncHandler(
+    async (req, res) => {
+        const email = req.params.searchTerm;
+        console.log("Received doctorid:", email);  // Log the user ID to debug
+
+        try {
+            // Fetch the user to ensure it exists before deleting
+            const doctor = await DoctorModel.findOne({ email: email });
+
+            if (!doctor) {
+                res.status(404).send("doctorid not found");
+                return;
+            }
+
+            const prodResult = await DoctorModel.deleteOne({ email: email });
+
+            res.json({
+                productDeleted: prodResult,
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
 app.get("/sarabe/user/:email", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
@@ -339,6 +453,20 @@ app.get("/sarabe/user/:email", asyncHandler(
         }
 
         res.send(user);  
+    }
+));
+app.get("/sarabe/doctor/:UUID", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const doctorUUID = req.params.UUID; 
+        const doctor = await DoctorModel.findOne({ UUID: doctorUUID });  
+
+        if (!doctor) {
+            res.status(404).send("User not found"); 
+            return;
+        }
+
+        res.send(doctor);  
     }
 ));
 app.get("/sarabe/destro",asyncHandler(
@@ -376,7 +504,7 @@ app.get("/sarabe/prod/seed",asyncHandler(
             res.send ("seed is already done");
             return;
         }
-        await ProductModel.create(seedProduct)
+        await ProductModel.create(seedCCProduct)
         await ProductSpecModel.create(seedProdSpec)
         res.send("Product seed is done");
     }
