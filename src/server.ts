@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express"; 
 import cors from "cors";
-import { seedProdSpec, seedCCProduct, seedUser, seedDoctor,seedhospital } from "./data";
+import { seedProdSpec, seedCCProduct, seedUser, seedDoctor,seedhospital,seedappointmentRequest } from "./data";
 import { seedOrders } from "./dataset2";
 import { dbConnect } from "./configs/database.config";
 import asyncHandler from 'express-async-handler';
@@ -479,6 +479,134 @@ app.get("/sarabe/hospital/:hospitalID", asyncHandler(
         }
 
         res.send(hospital);
+    }
+));
+
+app.get("/sarabe/appointmentRequest", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const appointmentRequest = await appointmentRequestModel.find();
+        res.send(appointmentRequest)
+    }
+))
+app.post("/sarabe/appointmentRequest/Create", asyncHandler(
+    async (req, res, next) => {
+
+        res.header('Access-Control-Allow-Origin', '*');
+
+        const { aprID, userID, docUUID, hospitalID, scheduled_time,request_type, notes,created_at } = req.body;
+        const appointmentRequest: appointmentRequest = {
+            id: '',
+            aprID: aprID,
+            userID: userID,
+            docUUID: docUUID,
+            hospitalID: hospitalID,
+            scheduled_time: scheduled_time,
+            request_type: request_type,
+            notes: notes,
+            created_at: created_at
+        }
+        const existingappointmentRequest = await appointmentRequestModel.findOne({ hospitalID: hospitalID });
+        if (existingappointmentRequest) {
+            // Email already exists, return a response indicating the conflict
+            res.json("already");
+        } else {
+            const dbappointmentRequest = await appointmentRequestModel.create(appointmentRequest);
+            res.json("done");
+        }
+
+    }
+))
+app.post("/sarabe/appointmentRequest/update", asyncHandler(
+    async (req, res) => {
+        const { aprID, userID, docUUID, hospitalID, scheduled_time, request_type, notes,created_at } = req.body;
+
+        try {
+            const appointmentRequest = await appointmentRequestModel.findOne({ aprID: aprID });
+
+            if (!appointmentRequest) {
+                res.status(404).send("hospitalID not found");
+                return;
+            }
+
+            // Update user details
+            appointmentRequest.aprID = aprID || appointmentRequest.aprID;
+            appointmentRequest.userID = userID || appointmentRequest.userID;
+            appointmentRequest.docUUID = docUUID || appointmentRequest.docUUID;
+            appointmentRequest.hospitalID = hospitalID || appointmentRequest.hospitalID;
+            appointmentRequest.scheduled_time = scheduled_time || appointmentRequest.scheduled_time;
+            appointmentRequest.request_type = request_type || appointmentRequest.request_type;
+            appointmentRequest.notes = notes || appointmentRequest.notes; 
+            appointmentRequest.created_at = created_at || appointmentRequest.created_at; 
+            await appointmentRequest.save();
+
+            res.json("appointmentRequest details updated successfully");
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
+app.get("/sarabe/appointmentRequest/destro", asyncHandler(
+    async (req, res) => {
+        const appointmentRequest = await appointmentRequestModel.deleteMany();
+        res.send(appointmentRequest)
+    }
+))
+app.get("/sarabe/appointmentRequest/seed", asyncHandler(
+    async (req, res) => {
+        const appointmentRequest = await appointmentRequestModel.countDocuments();
+        if (appointmentRequest > 0) {
+            res.send("seed is already done");
+            return;
+        }
+        await appointmentRequestModel.create(seedappointmentRequest)
+        res.send("appointmentRequest seed is done");
+    }
+))
+app.get("/sarabe/appointmentRequest/destro/:searchTerm", asyncHandler(
+    async (req, res) => {
+        const aprID = req.params.searchTerm;
+        console.log("Received aprID:", aprID);  // Log the user ID to debug
+
+        try {
+            // Fetch the user to ensure it exists before deleting
+            const appointmentRequest = await appointmentRequestModel.findOne({ aprID: aprID });
+
+            if (!appointmentRequest) {
+                res.status(404).send("appointmentRequest not found");
+                return;
+            }
+
+            const prodResult = await appointmentRequestModel.deleteOne({ aprID: aprID });
+
+            res.json({
+                productDeleted: prodResult,
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
+app.get("/sarabe/appointmentRequest/:aprID", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const aprID = req.params.aprID;
+        const appointmentRequest = await HospitalModel.findOne({ aprID: aprID });
+
+        if (!appointmentRequest) {
+            res.status(404).send("User not found");
+            return;
+        }
+
+        res.send(appointmentRequest);
     }
 ));
 //Ecom related 

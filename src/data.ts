@@ -214,7 +214,7 @@ export const seedDoctor: any[] = [
     specialization:"Neuro Physician",
     license_number:"19950514",
     phone_number:"41505991",
-    hospital_id :"H001" 
+    hospital_id :"HOS001" 
   },
   {
     UUID:"DOC002",
@@ -224,7 +224,7 @@ export const seedDoctor: any[] = [
     specialization:"Physician",
     license_number:"19950514",
     phone_number:"41505991",
-    hospital_id :"H002" 
+    hospital_id :"HOS002" 
   },
   {
     UUID:"DOC003",
@@ -234,7 +234,7 @@ export const seedDoctor: any[] = [
     specialization:"Cardiothoracic Surgeon",
     license_number:"19950514",
     phone_number:"41505991",
-    hospital_id :"H003" 
+    hospital_id :"HOS003" 
   },
      
        
@@ -268,3 +268,15 @@ export const seedhospital: any[] = [
     phone_number:"011 557 7111", 
   } 
 ];
+export const seedappointmentRequest: any[]=[
+  {
+    aprID:"000",
+    userID:"sara@sara.sara",
+    docUUID:"DOC001", 
+    hospitalID:"HOS001",
+    scheduled_time:"01/06/2025",  
+    request_type :"consultation",
+    notes:"-",  
+    created_at:"01/06/2025", 
+  },
+]
