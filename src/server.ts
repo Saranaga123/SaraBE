@@ -342,6 +342,7 @@ app.get("/sarabe/doctor/destro/:searchTerm", asyncHandler(
         }
     }
 ));
+
 app.get("/sarabe/doctor/:UUID", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
