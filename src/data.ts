@@ -239,3 +239,32 @@ export const seedDoctor: any[] = [
      
        
 ];
+export const seedhospital: any[] = [ 
+  {
+    hospitalID:"HOS001",
+    name:"Lanka Hospitals",  
+    location:"Colombo",
+    image:"", 
+    email :"LHColombo@gmail.com", 
+    license_number:"LHC0001",
+    phone_number:"011 543 0000", 
+  },
+  {
+    hospitalID:"HOS002",
+    name:"Durdans Hospital",  
+    location:"Colombo",
+    image:"", 
+    email :"DHColombo@gmail.com", 
+    license_number:"DHC0001",
+    phone_number:"011 214 0000", 
+  },
+  {
+    hospitalID:"HOS003",
+    name:"Nawaloka Hospitals",  
+    location:"Colombo",
+    image:"", 
+    email :"NHColombo@gmail.com", 
+    license_number:"NHC0001",
+    phone_number:"011 557 7111", 
+  } 
+];

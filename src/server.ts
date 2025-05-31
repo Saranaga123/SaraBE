@@ -1,9 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
-import nodemailer from "nodemailer";
+import express from "express"; 
 import cors from "cors";
-import { seedProdSpec, seedCCProduct, seedUser, seedDoctor } from "./data";
+import { seedProdSpec, seedCCProduct, seedUser, seedDoctor,seedhospital } from "./data";
 import { seedOrders } from "./dataset2";
 import { dbConnect } from "./configs/database.config";
 import asyncHandler from 'express-async-handler';
@@ -13,6 +12,8 @@ import { Product, ProductModel } from "./models/product.model";
 import { Orders, OrdersModel } from "./models/order.model";
 import { ProductSpec, ProductSpecModel } from "./models/prodSpec.model";
 import { Doctor, DoctorModel } from "./models/doctor.model";
+import { Hospital, HospitalModel } from "./models/hospital.model";
+import { appointmentRequest, appointmentRequestModel } from "./models/appointmentRequests.model";
 dbConnect();
 const app = express();
 app.use((req, res, next) => {
@@ -228,7 +229,6 @@ app.get("/sarabe/user/:email", asyncHandler(
         res.send(user);
     }
 ));
-
 app.get("/sarabe/doctor", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
@@ -342,7 +342,6 @@ app.get("/sarabe/doctor/destro/:searchTerm", asyncHandler(
         }
     }
 ));
-
 app.get("/sarabe/doctor/:UUID", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
@@ -357,7 +356,131 @@ app.get("/sarabe/doctor/:UUID", asyncHandler(
         res.send(doctor);
     }
 ));
+app.get("/sarabe/hospital", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const hospital = await HospitalModel.find();
+        res.send(hospital)
+    }
+))
+app.post("/sarabe/hospital/Create", asyncHandler(
+    async (req, res, next) => {
 
+        res.header('Access-Control-Allow-Origin', '*');
+
+        const { hospitalID, name, location, image, email, license_number, phone_number } = req.body;
+        const newhospital: Hospital = {
+            id: '',
+            hospitalID: hospitalID,
+            name: name,
+            location: location,
+            image: image,
+            email: email,
+            license_number: license_number,
+            phone_number: phone_number
+        }
+        const existinghospital = await HospitalModel.findOne({ hospitalID: hospitalID });
+        if (existinghospital) {
+            // Email already exists, return a response indicating the conflict
+            res.json("already");
+        } else {
+            const dbhos = await HospitalModel.create(newhospital);
+            res.json("done");
+        }
+
+    }
+))
+app.post("/sarabe/hospital/update", asyncHandler(
+    async (req, res) => {
+        const { hospitalID, name, location, image, email, license_number, phone_number } = req.body;
+
+        try {
+            const hospital = await HospitalModel.findOne({ hospitalID: hospitalID });
+
+            if (!hospital) {
+                res.status(404).send("hospitalID not found");
+                return;
+            }
+
+            // Update user details
+            hospital.hospitalID = hospitalID || hospital.hospitalID;
+            hospital.name = name || hospital.name;
+            hospital.location = location || hospital.location;
+            hospital.image = image || hospital.image;
+            hospital.email = email || hospital.email;
+            hospital.license_number = license_number || hospital.license_number;
+            hospital.phone_number = phone_number || hospital.phone_number; 
+            await hospital.save();
+
+            res.json("User details updated successfully");
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
+app.get("/sarabe/hospital/destro", asyncHandler(
+    async (req, res) => {
+        const hospital = await HospitalModel.deleteMany();
+        res.send(hospital)
+    }
+))
+app.get("/sarabe/hospital/seed", asyncHandler(
+    async (req, res) => {
+        const hospital = await HospitalModel.countDocuments();
+        if (hospital > 0) {
+            res.send("seed is already done");
+            return;
+        }
+        await HospitalModel.create(seedhospital)
+        res.send("hospital seed is done");
+    }
+))
+app.get("/sarabe/hospital/destro/:searchTerm", asyncHandler(
+    async (req, res) => {
+        const hospitalID = req.params.searchTerm;
+        console.log("Received hospitalID:", hospitalID);  // Log the user ID to debug
+
+        try {
+            // Fetch the user to ensure it exists before deleting
+            const hospital = await HospitalModel.findOne({ hospitalID: hospitalID });
+
+            if (!hospital) {
+                res.status(404).send("hospitalID not found");
+                return;
+            }
+
+            const prodResult = await HospitalModel.deleteOne({ hospitalID: hospitalID });
+
+            res.json({
+                productDeleted: prodResult,
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
+app.get("/sarabe/hospital/:hospitalID", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const hospitalID = req.params.UUID;
+        const hospital = await HospitalModel.findOne({ hospitalID: hospitalID });
+
+        if (!hospital) {
+            res.status(404).send("User not found");
+            return;
+        }
+
+        res.send(hospital);
+    }
+));
 //Ecom related 
 //Ecom Product related 
 app.get("/sarabe/prod/destro", asyncHandler(
@@ -595,7 +718,7 @@ app.post("/sarabe/order/Create", asyncHandler(
     async (req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         const { date, product, name, model, billingAmount, units, unitprice, mobile, email, post, add1, add2, add3, payMethod, status } = req.body;
-        const newOrder = {
+        const newOrder: Orders = {
             date: date,
             product: product,
             name: name,
@@ -610,7 +733,8 @@ app.post("/sarabe/order/Create", asyncHandler(
             add2: add2,
             add3: add3,
             payMethod: payMethod,
-            status: status
+            status: status,
+            id: ""
         }
         const dbOrder = await OrdersModel.create(newOrder);
         res.json(dbOrder); // Send the created order as JSON response

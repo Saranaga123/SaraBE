@@ -18,9 +18,9 @@ export const appointmentRequestSchema = new Schema<appointmentRequest>(
         docUUID:{type:String, required:true}, 
         hospitalID:{type:String, required:true},
         scheduled_time:{type:String, required:true},  
-        request_type :{type:String, required:false},
+        request_type :{type:String, required:true},
         notes:{type:String, required:false},  
-        created_at:{type:String, required:false},  
+        created_at:{type:String, required:true},  
          
     },{
         toJSON:{
