@@ -1047,6 +1047,6 @@ app.get("/sarabe/specialization/seed", asyncHandler(
             return;
         }
         await SpecializationModel.create(seedspecialization)
-        res.send("hospital seed is done");
+        res.send("specialization seed is done");
     }
 ))
