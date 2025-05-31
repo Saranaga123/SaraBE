@@ -322,7 +322,7 @@ export const seedspecialization: any[]=[
     specialization:"Neuro Physician"
   },
   {
-    type:"physician",
-    specialization:"physician"
+    type:"Physician",
+    specialization:"Physician"
   },
 ]

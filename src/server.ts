@@ -315,6 +315,24 @@ app.get("/sarabe/doctor/seed", asyncHandler(
         res.send("doctors seed is done");
     }
 ))
+app.get("/sarabe/doctor/:UUID", asyncHandler(async (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*');
+
+    try {
+        const UUID = req.params.UUID;
+        const doctor = await DoctorModel.find({ UUID: UUID });
+
+        if (!doctor || doctor.length === 0) {
+            res.status(404).send("doctor not found");
+            return;
+        }
+
+        res.send(doctor);
+    } catch (error) {
+        console.error("Error retrieving doctor:", error);
+        res.status(500).send("Internal Server Error");
+    }
+}));
 app.get("/sarabe/doctor/destro/:searchTerm", asyncHandler(
     async (req, res) => {
         const email = req.params.searchTerm;
@@ -391,6 +409,20 @@ app.post("/sarabe/hospital/Create", asyncHandler(
 
     }
 ))
+app.get("/sarabe/hospital/:hospitalID", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const hospitalID = req.params.hospitalID;
+        const hospital = await HospitalModel.findOne({ hospitalID: hospitalID });
+
+        if (!hospital) {
+            res.status(404).send("User not found");
+            return;
+        }
+
+        res.send(hospital);
+    }
+));
 app.post("/sarabe/hospital/update", asyncHandler(
     async (req, res) => {
         const { hospitalID, name, location, image, email, license_number, phone_number } = req.body;
@@ -1050,3 +1082,21 @@ app.get("/sarabe/specialization/seed", asyncHandler(
         res.send("specialization seed is done");
     }
 ))
+app.get("/sarabe/appointmentRequest/user/:userID", asyncHandler(async (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*');
+
+    try {
+        const userID = req.params.userID;
+        const appointmentRequest = await appointmentRequestModel.find({ userID: userID });
+
+        if (!appointmentRequest || appointmentRequest.length === 0) {
+            res.status(404).send("appointmentRequest not found");
+            return;
+        }
+
+        res.send(appointmentRequest);
+    } catch (error) {
+        console.error("Error retrieving orders:", error);
+        res.status(500).send("Internal Server Error");
+    }
+}));
