@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express"; 
 import cors from "cors";
-import { seedProdSpec, seedCCProduct, seedUser, seedDoctor,seedhospital,seedappointmentRequest } from "./data";
+import { seedProdSpec, seedCCProduct, seedUser, seedDoctor,seedhospital,seedappointmentRequest, seedspecialization } from "./data";
 import { seedOrders } from "./dataset2";
 import { dbConnect } from "./configs/database.config";
 import asyncHandler from 'express-async-handler';
@@ -14,6 +14,7 @@ import { ProductSpec, ProductSpecModel } from "./models/prodSpec.model";
 import { Doctor, DoctorModel } from "./models/doctor.model";
 import { Hospital, HospitalModel } from "./models/hospital.model";
 import { appointmentRequest, appointmentRequestModel } from "./models/appointmentRequests.model";
+import { Specialization,SpecializationModel } from "./models/specialization.model";
 dbConnect();
 const app = express();
 app.use((req, res, next) => {
@@ -481,7 +482,6 @@ app.get("/sarabe/hospital/:hospitalID", asyncHandler(
         res.send(hospital);
     }
 ));
-
 app.get("/sarabe/appointmentRequest", asyncHandler(
     async (req, res) => {
         res.header('Access-Control-Allow-Origin', '*');
@@ -974,5 +974,79 @@ app.get("/sarabe/orders/seed", asyncHandler(
         await OrdersModel.create(seedOrders)
         res.send("order seed is done");
         console.log("order seed is done")
+    }
+))
+//Ecom Medicall related 
+app.get("/sarabe/specialization", asyncHandler(
+    async (req, res) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        const specialization = await SpecializationModel.find();
+        res.send(specialization)
+    }
+))
+app.post("/sarabe/specialization/Create", asyncHandler(
+    async (req, res, next) => {
+
+        res.header('Access-Control-Allow-Origin', '*');
+
+        const { type, specialization } = req.body;
+        const newspecialization: Specialization = {
+            type: type,
+            specialization: specialization,
+            id: ""
+        }
+        const existingspecialization = await HospitalModel.findOne({ type: type });
+        if (specialization) {
+            // Email already exists, return a response indicating the conflict
+            res.json("already");
+        } else {
+            const dbhos = await HospitalModel.create(newspecialization);
+            res.json("done");
+        }
+
+    }
+))
+app.post("/sarabe/specialization/update", asyncHandler(
+    async (req, res) => {
+        const { type, specialization } = req.body;
+
+        try {
+            const dbspecialization = await SpecializationModel.findOne({ type: type });
+
+            if (!dbspecialization) {
+                res.status(404).send("specialization not found");
+                return;
+            }
+
+            // Update user details
+            specialization.type = type || specialization.type;
+            specialization.specialization = specialization || specialization.specialization; 
+            await specialization.save();
+
+            res.json("User details updated successfully");
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).send("Server Error: " + error.message);
+            } else {
+                res.status(500).send("Unknown Server Error");
+            }
+        }
+    }
+));
+app.get("/sarabe/specialization/destro", asyncHandler(
+    async (req, res) => {
+        const specialization = await SpecializationModel.deleteMany();
+        res.send(specialization)
+    }
+))
+app.get("/sarabe/specialization/seed", asyncHandler(
+    async (req, res) => {
+        const specialization = await SpecializationModel.countDocuments();
+        if (specialization > 0) {
+            res.send("seed is already done");
+            return;
+        }
+        await SpecializationModel.create(seedspecialization)
+        res.send("hospital seed is done");
     }
 ))

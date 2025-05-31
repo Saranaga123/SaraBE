@@ -280,3 +280,49 @@ export const seedappointmentRequest: any[]=[
     created_at:"01/06/2025", 
   },
 ]
+export const seedspecialization: any[]=[
+  {
+    type:"Ayurvedic Physician",
+    specialization:"Ayurvedic Physician"
+  },
+  {
+    type:"Cardiologist",
+    specialization:"Cardiologist"
+  },
+  {
+    type:"Cardiothoracic Surgeon",
+    specialization:"Cardiothoracic Surgeon"
+  },
+  {
+    type:"Dermatologist",
+    specialization:"Dermatologist"
+  },
+  {
+    type:"Dental Surgeon",
+    specialization:"Dental Surgeon"
+  },
+  {
+    type:"Ear/Nose And Throat Surgeon",
+    specialization:"Ear/Nose And Throat Surgeon"
+  },
+  {
+    type:"Eye Surgeon",
+    specialization:"Eye Surgeon"
+  },
+  {
+    type:"Genito Urinary Surgeon",
+    specialization:"Genito Urinary Surgeon"
+  },
+  {
+    type:"Gynecologist",
+    specialization:"Gynecologist"
+  },
+  {
+    type:"Neuro Physician",
+    specialization:"Neuro Physician"
+  },
+  {
+    type:"physician",
+    specialization:"physician"
+  },
+]
