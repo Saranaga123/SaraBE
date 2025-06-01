@@ -242,7 +242,7 @@ app.post("/sarabe/doctor/Create", asyncHandler(
 
         res.header('Access-Control-Allow-Origin', '*');
 
-        const { UUID, name, specialization, license_number, phone_number, hospital_id, gender, image } = req.body;
+        const { UUID, name, specialization, license_number, phone_number, hospital_id, gender, image,available_slots } = req.body;
         const newdoctor: Doctor = {
             id: '',
             UUID: UUID,
@@ -252,7 +252,8 @@ app.post("/sarabe/doctor/Create", asyncHandler(
             specialization: specialization,
             license_number: license_number,
             phone_number: phone_number,
-            hospital_id: hospital_id
+            hospital_id: hospital_id,
+            available_slots: available_slots
         }
         const existingDoctor = await DoctorModel.findOne({ UUID: UUID });
         if (existingDoctor) {
@@ -526,7 +527,7 @@ app.post("/sarabe/appointmentRequest/Create", asyncHandler(
 
         res.header('Access-Control-Allow-Origin', '*');
 
-        const { aprID, userID, docUUID, hospitalID, scheduled_time,request_type, notes,created_at } = req.body;
+        const { aprID, userID, docUUID, hospitalID, scheduled_time,request_type, notes,created_at,rejection_note,time_slot} = req.body;
         const appointmentRequest: appointmentRequest = {
             id: '',
             aprID: aprID,
@@ -536,7 +537,9 @@ app.post("/sarabe/appointmentRequest/Create", asyncHandler(
             scheduled_time: scheduled_time,
             request_type: request_type,
             notes: notes,
-            created_at: created_at
+            created_at: created_at,
+            rejection_note: rejection_note,
+            time_slot: time_slot
         }
         const existingappointmentRequest = await appointmentRequestModel.findOne({ hospitalID: hospitalID });
         if (existingappointmentRequest) {

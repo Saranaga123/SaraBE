@@ -8,7 +8,9 @@ export interface appointmentRequest{
     scheduled_time:string
     request_type :string; 
     notes:string; 
-    created_at:string;  
+    created_at:string; 
+    rejection_note :string; 
+    time_slot:string; 
      
 }
 export const appointmentRequestSchema = new Schema<appointmentRequest>(
@@ -21,6 +23,8 @@ export const appointmentRequestSchema = new Schema<appointmentRequest>(
         request_type :{type:String, required:true},
         notes:{type:String, required:false},  
         created_at:{type:String, required:true},  
+        rejection_note:{type:String, required:false},  
+        time_slot:{type:String, required:false},  
          
     },{
         toJSON:{

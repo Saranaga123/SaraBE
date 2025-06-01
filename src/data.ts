@@ -207,38 +207,49 @@ export const seedProdSpec: any[] = [
 ];
 export const seedDoctor: any[] = [ 
   {
-    UUID:"DOC001",
-    name:"Saranga", 
-    gender:"male",
+    UUID: "DOC001",
+    name: "Saranga", 
+    gender: "male",
     image: null,  
-    specialization:"Neuro Physician",
-    license_number:"19950514",
-    phone_number:"41505991",
-    hospital_id :"HOS001" 
+    specialization: "Neuro Physician",
+    license_number: "19950514",
+    phone_number: "41505991",
+    hospital_id: "HOS001",
+    available_slots: [
+      { day: "Monday", time: "09:00–12:00" },
+      { day: "Wednesday", time: "14:00–17:00" }
+    ]
   },
   {
-    UUID:"DOC002",
-    name:"Dissana", 
-    gender:"male",
+    UUID: "DOC002",
+    name: "Dissana", 
+    gender: "male",
     image: null,  
-    specialization:"Physician",
-    license_number:"19950514",
-    phone_number:"41505991",
-    hospital_id :"HOS002" 
+    specialization: "Physician",
+    license_number: "19950514",
+    phone_number: "41505991",
+    hospital_id: "HOS002",
+    available_slots: [
+      { day: "Tuesday", time: "10:00–13:00" },
+      { day: "Thursday", time: "15:00–18:00" }
+    ]
   },
   {
-    UUID:"DOC003",
-    name:"Kylie", 
-    gender:"female",
+    UUID: "DOC003",
+    name: "Kylie", 
+    gender: "female",
     image: null,  
-    specialization:"Cardiothoracic Surgeon",
-    license_number:"19950514",
-    phone_number:"41505991",
-    hospital_id :"HOS003" 
+    specialization: "Cardiothoracic Surgeon",
+    license_number: "19950514",
+    phone_number: "41505991",
+    hospital_id: "HOS003",
+    available_slots: [
+      { day: "Friday", time: "08:00–11:00" },
+      { day: "Saturday", time: "10:00–13:00" }
+    ]
   },
-     
-       
 ];
+
 export const seedhospital: any[] = [ 
   {
     hospitalID:"HOS001",
@@ -278,6 +289,8 @@ export const seedappointmentRequest: any[]=[
     request_type :"consultation",
     notes:"-",  
     created_at:"01/06/2025", 
+    rejection_note:"",
+    time_slot:""
   },
 ]
 export const seedspecialization: any[]=[
